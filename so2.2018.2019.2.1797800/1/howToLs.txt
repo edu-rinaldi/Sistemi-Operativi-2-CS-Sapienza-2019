@@ -1,0 +1,3 @@
+ls:
+stampa prima i file ( in ordine lessicografico )
+poi stampa le directory ( in ordine lessicografico )
