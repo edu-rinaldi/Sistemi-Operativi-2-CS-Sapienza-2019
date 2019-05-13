@@ -3,15 +3,19 @@
 #include <getopt.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
+
 
 
 // --- FUNCTION DECLARATION ---
 
-void print_usage(char n[]);
+void print_usage(char *n);
 int isnumber(char c);
-int string_is_number(char s[]);
-int path_type(char path[]);
-
+int string_is_number(char *s);
+int path_type(char *path);
+void list_files(char *path, int num_files, char **files);
+int count_files(char *path);
 // --- END FUNCTION DECLARATION ---
 
 
@@ -90,23 +94,30 @@ int main(int argc, char **argv)
     // printf("Links:\n");
     // for(int i=0; i<numLinks; i++) printf("\t%s\n",links[i]);
     // printf("numDir: %d\tnumFiles: %d\tnumLinks: %d\n",numDir,numFiles,numLinks);  
-    // printf("Flag d settato a %d\nFlag R settato a %d\nFlag l settato a %d con valore %d\n",d_flag, R_flag,l_flag, mod);
+    // printf("Flag d settato a %d\nFlag R settato a %d\nFlag l settato a %d con valore %d\n",
+    //         d_flag,
+    //         R_flag,
+    //         l_flag, 
+    //         mod);
     
 
     // --- FINE PARSE PARAMETRI ---
-
+    int num_files = count_files(".");
+    char *dir_files[num_files];
+    list_files(".", num_files, dir_files);
+    for(int i=0; i<num_files; i++) printf("%s\n", dir_files[i]);
         
 
     return 0;
 }
 
 //funzione del print usage
-void print_usage(char n[]) { printf("Usage %s [-dR] [-l mod] [files]\n", n);}
+void print_usage(char *n) { printf("Usage %s [-dR] [-l mod] [files]\n", n);}
 
 int isnumber(char c) {return c >= '0' || c <= '9' ? 1 : 0;}
 
 //funzione che restituisce true se la stringa contiene SOLO numeri
-int string_is_number(char s[]) 
+int string_is_number(char *s) 
 {
     int slen = strlen(s);
     for(int i=0; i<slen; i++) 
@@ -116,11 +127,35 @@ int string_is_number(char s[])
 // if path is directory --> return 0;
 // if path is regFile -->   return 1;
 // if path is symlink -->   return 2;
-int path_type(char path[])
+int path_type(char *path)
 {
     struct stat st;
     if ( lstat(path, &st) == 0 && S_ISDIR(st.st_mode) ) return 0;
     if ( lstat(path, &st) == 0 && S_ISREG(st.st_mode) ) return 1;
     if ( lstat(path, &st) == 0 && S_ISLNK(st.st_mode) ) return 2;
     return -1;
+}
+int count_files(char *path)
+{
+    struct dirent *dp;
+    DIR *dir = opendir(path);
+    int count = 0;
+    // se non riesce ad aprire la directory
+    if (!dir) return -1;
+    //se riesce conta i file
+    while ((dp = readdir(dir)) != NULL) count++;
+    //chiudi la directory
+    closedir(dir);
+    return count;
+}
+void list_files(char *path, int num_files, char **files)
+{
+    struct dirent *dp;
+    DIR *dir = opendir(path);
+    // se non riesce ad aprire la directory
+    if (!dir) return;
+    // se riesce aggiungi il path
+    while ((dp = readdir(dir)) != NULL) files[--num_files] = dp->d_name;
+    //chiudi la directory
+    closedir(dir);
 }
