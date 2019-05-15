@@ -1,3 +1,14 @@
 ls:
 stampa prima i file ( in ordine lessicografico )
 poi stampa le directory ( in ordine lessicografico )
+
+
+
+ls [opts] [files]
+
+ls [opts] files --> qualsiasi cosa che deve fare la fa su files anzichè "."
+
+ls -d [files] --> stampa solo le directory in files o la directory "."
+ls -R [files] --> stampa prima le directory, poi i files. Poi per ogni directory chiama la stampa su di esse
+ls -l 0 [files] --> stampa "permessi \t hlink \t dim \t nome"
+ls -l 1 [files] --> stampa "permessi \t nome"
