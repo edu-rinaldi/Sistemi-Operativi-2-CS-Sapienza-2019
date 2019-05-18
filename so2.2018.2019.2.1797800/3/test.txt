@@ -1,0 +1,7 @@
+gawk
+fa 
+le 
+pippe
+scon
+la 
+s
