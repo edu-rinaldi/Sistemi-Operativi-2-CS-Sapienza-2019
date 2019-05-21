@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <errno.h>
 char *pname, *f_in, *f_out, *s;
 int i1, i2;
 
@@ -64,7 +65,7 @@ int main(int argc, char **argv)
     print_parameter(DEBUG_MODE);
 
     // se non ho i permessi di lettura o il file non esiste --> exit 20
-    if(!read_permission(f_in)) {fprintf(stderr, "Unable to open file %s because of e\n", f_in); exit(20);}
+    if(!read_permission(f_in)) {fprintf(stderr, "Unable to open file %s because of %s\n", f_in, strerror(errno)); exit(20);}
     
     // apri il file binario f_in
     FILE *fileBin1 = fopen(f_in, "rb");
